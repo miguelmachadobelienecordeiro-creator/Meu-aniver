@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Aniversário, Miguel!</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Georgia,"Times New Roman",serif}
+body{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  overflow:hidden; color:#fff;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(255,205,100,.22),transparent 28%),
+    linear-gradient(145deg,#24113d 0%,#4d174d 48%,#180d2c 100%);
+}
+body:before{
+ content:"";position:fixed;inset:0;opacity:.12;pointer-events:none;
+ background-image:radial-gradient(#fff 1px,transparent 1px);
+ background-size:34px 34px;
+}
+.lights{position:fixed;top:0;left:0;right:0;height:70px;display:flex;justify-content:space-around;pointer-events:none}
+.light{width:13px;height:13px;border-radius:50%;margin-top:17px;background:#ffd86b;box-shadow:0 0 16px #ffd86b}
+.light:nth-child(2n){background:#ff82b4;box-shadow:0 0 16px #ff82b4}
+.light:nth-child(3n){background:#8fd8ff;box-shadow:0 0 16px #8fd8ff}
+.rope{position:fixed;top:21px;left:0;right:0;border-top:2px solid rgba(255,255,255,.35)}
+.card{
+ position:relative;width:min(650px,91vw);padding:38px 30px 34px;text-align:center;
+ background:rgba(35,12,52,.86);border:1px solid rgba(255,220,150,.4);
+ border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.45);
+}
+.cake{font-size:72px;line-height:1;margin-bottom:5px}
+.small{font-family:Arial,sans-serif;letter-spacing:4px;text-transform:uppercase;color:#ffd98b;font-size:12px}
+h1{font-size:clamp(38px,8vw,68px);margin:10px 0 5px;font-weight:normal;color:#ffe5a7}
+.divider{display:flex;align-items:center;gap:12px;justify-content:center;color:#e5b86c;margin:18px 0}
+.divider:before,.divider:after{content:"";width:80px;height:1px;background:#9b6d38}
+.message{font-size:20px;line-height:1.65;color:#f5e9f5;margin:0 auto 25px;max-width:500px}
+button{
+ font-family:Arial,sans-serif;font-weight:bold;font-size:16px;letter-spacing:.5px;
+ color:#321334;background:#ffd77c;border:0;border-radius:7px;padding:15px 27px;
+ cursor:pointer;box-shadow:0 5px 0 #b98239;transition:.15s;
+}
+button:hover{transform:translateY(-2px);box-shadow:0 7px 0 #b98239}
+button:active{transform:translateY(3px);box-shadow:0 2px 0 #b98239}
+button:disabled{cursor:default}
+#final{display:none;margin-top:27px;animation:show .8s ease}
+#final .line{font-size:25px;color:#ffd98b;margin-bottom:8px}
+#final .miguel{font-size:clamp(35px,8vw,58px);font-weight:bold;color:#fff0c2}
+#status{font:13px Arial,sans-serif;color:#cbbbcf;margin-top:14px;min-height:18px}
+.balloon{position:fixed;font-size:45px;opacity:.5;animation:rise 10s linear infinite}
+.a{left:4%;bottom:-70px}.b{right:4%;bottom:-70px;animation-delay:4s}
+@keyframes rise{to{transform:translateY(-120vh) rotate(15deg)}}
+@keyframes show{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+@media(max-width:500px){.card{padding:32px 18px}.message{font-size:18px}.cake{font-size:60px}}
+</style>
+</head>
+<body>
+<div class="rope"></div>
+<div class="lights">
+  <span class="light"></span><span class="light"></span><span class="light"></span>
+  <span class="light"></span><span class="light"></span><span class="light"></span>
+  <span class="light"></span><span class="light"></span><span class="light"></span>
+  <span class="light"></span><span class="light"></span><span class="light"></span>
+</div>
+
+<div class="balloon a">🎈</div>
+<div class="balloon b">🎈</div>
+
+<div class="card">
+  <div class="cake">🎂</div>
+  <div class="small">uma data especial</div>
+  <h1>Parabéns, Miguel!</h1>
+  <div class="divider">✦</div>
+  <p class="message">
+    Hoje é dia de comemorar você!<br>
+    Que não faltem motivos para sorrir,<br>
+    momentos inesquecíveis e muita felicidade.
+  </p>
+
+  <button id="play">🎵 COMEÇAR A FESTA</button>
+
+  <div id="final">
+    <div class="line">E agora, uma última mensagem...</div>
+    <div class="miguel">PARABÉNS, MIGUEL! 🎉</div>
+  </div>
+  <div id="status"></div>
+</div>
+
+<script>
+let ctx, master;
+const btn=document.getElementById("play");
+const final=document.getElementById("final");
+const status=document.getElementById("status");
+
+function tone(freq,start,dur,vol=.13){
+ const o=ctx.createOscillator(),g=ctx.createGain();
+ o.type="triangle";o.frequency.value=freq;
+ g.gain.setValueAtTime(.0001,start);
+ g.gain.exponentialRampToValueAtTime(vol,start+.025);
+ g.gain.exponentialRampToValueAtTime(.0001,start+dur-.03);
+ o.connect(g).connect(master);o.start(start);o.stop(start+dur);
+}
+
+/* Melodia instrumental de "Parabéns pra você" */
+function parabens(){
+ const notes=[
+  261.63,261.63,293.66,261.63,349.23,329.63,
+  261.63,261.63,293.66,261.63,392.00,349.23,
+  261.63,261.63,523.25,440.00,349.23,329.63,293.66,
+  466.16,466.16,440.00,349.23,392.00,349.23
+ ];
+ let t=ctx.currentTime+.1;
+ notes.forEach((n,i)=>{
+   const d=(i===5||i===11||i===18||i===24)?0.65:0.32;
+   tone(n,t,d,.16);t+=d;
+ });
+ return (t-ctx.currentTime)*1000;
+}
+
+function falarFinal(){
+ if(!("speechSynthesis" in window)){
+   status.textContent="Feliz aniversário! 🎂";
+   return;
+ }
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance("Parabéns, Miguel!");
+ u.lang="pt-BR";u.rate=.72;u.pitch=1.05;u.volume=1;
+ const voices=speechSynthesis.getVoices();
+ const v=voices.find(x=>x.lang==="pt-BR")||voices.find(x=>x.lang.startsWith("pt"));
+ if(v)u.voice=v;
+ u.onstart=()=>status.textContent="🎤 Parabéns, Miguel!";
+ u.onend=()=>status.textContent="Que seu dia seja incrível! 🎂";
+ speechSynthesis.speak(u);
+}
+
+btn.onclick=()=>{
+ btn.disabled=true;
+ btn.textContent="🎶 TOCANDO...";
+ status.textContent="🎵 Feliz aniversário...";
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC){final.style.display="block";falarFinal();return}
+ ctx=new AC();master=ctx.createGain();master.gain.value=.7;master.connect(ctx.destination);
+ const duration=parabens();
+ setTimeout(()=>{
+   final.style.display="block";
+   falarFinal();
+ },duration+400);
+};
+</script>
+</body>
+</html>
